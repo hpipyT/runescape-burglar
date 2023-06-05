@@ -7,6 +7,7 @@ TagManager:
   - AccessTool
   - Ground
   - Device
+  - LooseDevice
   layers:
   - Default
   - TransparentFX

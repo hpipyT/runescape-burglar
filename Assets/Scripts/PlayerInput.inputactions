@@ -107,6 +107,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "rightClick",
+                    "type": "Button",
+                    "id": "988e8d06-9472-4272-98d6-9645a3e329c0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "move",
                     "type": "Value",
                     "id": "cca14e45-cf25-487e-8ba7-15eafe2b4924",
@@ -138,6 +147,17 @@
                     "action": "move",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "22e85be2-dd49-48c7-92e0-382ae7a4463c",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "rightClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -162,6 +182,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "hoverOn",
+                    "type": "Value",
+                    "id": "a9f8b63d-0cf0-49c4-bae2-d35fab7610f2",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -184,6 +213,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "options",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5071b1fe-34d2-4fcf-8451-3f1fafb643de",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "hoverOn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

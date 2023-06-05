@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ControlledDevice : MonoBehaviour
+public class ControlledDevice : Item
 {
     public string displayName;
     public string descriptiveName;

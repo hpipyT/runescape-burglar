@@ -129,6 +129,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""rightClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""988e8d06-9472-4272-98d6-9645a3e329c0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""move"",
                     ""type"": ""Value"",
                     ""id"": ""cca14e45-cf25-487e-8ba7-15eafe2b4924"",
@@ -160,6 +169,17 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""22e85be2-dd49-48c7-92e0-382ae7a4463c"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""rightClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -184,6 +204,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""hoverOn"",
+                    ""type"": ""Value"",
+                    ""id"": ""a9f8b63d-0cf0-49c4-bae2-d35fab7610f2"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -208,6 +237,17 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""options"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5071b1fe-34d2-4fcf-8451-3f1fafb643de"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""hoverOn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -221,11 +261,13 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         // player
         m_player = asset.FindActionMap("player", throwIfNotFound: true);
         m_player_click = m_player.FindAction("click", throwIfNotFound: true);
+        m_player_rightClick = m_player.FindAction("rightClick", throwIfNotFound: true);
         m_player_move = m_player.FindAction("move", throwIfNotFound: true);
         // inventory
         m_inventory = asset.FindActionMap("inventory", throwIfNotFound: true);
         m_inventory_select = m_inventory.FindAction("select", throwIfNotFound: true);
         m_inventory_options = m_inventory.FindAction("options", throwIfNotFound: true);
+        m_inventory_hoverOn = m_inventory.FindAction("hoverOn", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -327,12 +369,14 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_player;
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_player_click;
+    private readonly InputAction m_player_rightClick;
     private readonly InputAction m_player_move;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
         public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @click => m_Wrapper.m_player_click;
+        public InputAction @rightClick => m_Wrapper.m_player_rightClick;
         public InputAction @move => m_Wrapper.m_player_move;
         public InputActionMap Get() { return m_Wrapper.m_player; }
         public void Enable() { Get().Enable(); }
@@ -346,6 +390,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @click.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClick;
                 @click.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClick;
                 @click.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClick;
+                @rightClick.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
+                @rightClick.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
+                @rightClick.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
                 @move.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
                 @move.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
                 @move.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
@@ -356,6 +403,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @click.started += instance.OnClick;
                 @click.performed += instance.OnClick;
                 @click.canceled += instance.OnClick;
+                @rightClick.started += instance.OnRightClick;
+                @rightClick.performed += instance.OnRightClick;
+                @rightClick.canceled += instance.OnRightClick;
                 @move.started += instance.OnMove;
                 @move.performed += instance.OnMove;
                 @move.canceled += instance.OnMove;
@@ -369,12 +419,14 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private IInventoryActions m_InventoryActionsCallbackInterface;
     private readonly InputAction m_inventory_select;
     private readonly InputAction m_inventory_options;
+    private readonly InputAction m_inventory_hoverOn;
     public struct InventoryActions
     {
         private @PlayerInput m_Wrapper;
         public InventoryActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @select => m_Wrapper.m_inventory_select;
         public InputAction @options => m_Wrapper.m_inventory_options;
+        public InputAction @hoverOn => m_Wrapper.m_inventory_hoverOn;
         public InputActionMap Get() { return m_Wrapper.m_inventory; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -390,6 +442,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @options.started -= m_Wrapper.m_InventoryActionsCallbackInterface.OnOptions;
                 @options.performed -= m_Wrapper.m_InventoryActionsCallbackInterface.OnOptions;
                 @options.canceled -= m_Wrapper.m_InventoryActionsCallbackInterface.OnOptions;
+                @hoverOn.started -= m_Wrapper.m_InventoryActionsCallbackInterface.OnHoverOn;
+                @hoverOn.performed -= m_Wrapper.m_InventoryActionsCallbackInterface.OnHoverOn;
+                @hoverOn.canceled -= m_Wrapper.m_InventoryActionsCallbackInterface.OnHoverOn;
             }
             m_Wrapper.m_InventoryActionsCallbackInterface = instance;
             if (instance != null)
@@ -400,6 +455,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @options.started += instance.OnOptions;
                 @options.performed += instance.OnOptions;
                 @options.canceled += instance.OnOptions;
+                @hoverOn.started += instance.OnHoverOn;
+                @hoverOn.performed += instance.OnHoverOn;
+                @hoverOn.canceled += instance.OnHoverOn;
             }
         }
     }
@@ -412,11 +470,13 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnClick(InputAction.CallbackContext context);
+        void OnRightClick(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
     }
     public interface IInventoryActions
     {
         void OnSelect(InputAction.CallbackContext context);
         void OnOptions(InputAction.CallbackContext context);
+        void OnHoverOn(InputAction.CallbackContext context);
     }
 }
