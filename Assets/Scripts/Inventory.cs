@@ -110,9 +110,18 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             if (items[i] == null)
             {
                 items[i] = Instantiate<Item>(item);
-                Transform model = items[i].gameObject.transform.Find("Model");
-                model.gameObject.SetActive(false);
-                
+
+                // disable rendering for inventory instance
+                foreach (Transform child in transform)
+                {
+                    // Disable the Mesh Renderer component on each child object
+                    MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
+                    if (meshRenderer != null)
+                    {
+                        meshRenderer.enabled = false;
+                    }
+                }
+
                 Debug.Log("Value " + item.name + " populated in cell " + i);
                 return;
             }

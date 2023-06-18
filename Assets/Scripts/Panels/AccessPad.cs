@@ -2,32 +2,35 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows;
 
-public class AccessPad : ControlledDevice
+public class AccessPad : Device, IUseable
 {
+    public Device controlledDevice;
 
-    public ControlledDevice device;
+    public void Use()
+    {
+        Debug.Log("Trying access pad");
+    }
+
+    public void UseWith(Item item)
+    {
+        Debug.Log("Trying access pad with item: " + item.name);
+        AttemptAccess(item.GetComponent<Device>());
+    }
+
 
     // has a keycard reader
     // has a numpad
     // has an electronic bypass
 
-    public override void TryDevice()
-    {
-        base.TryDevice();
-    }
 
-    public override void TryDevice(GameObject input)
+    private void AttemptAccess(Device device)
     {
-        base.TryDevice();
-        AttemptAccess(input);
-    }
+        Debug.Log(device.name);
 
-    public void AttemptAccess(GameObject item)
-    {
-        if (item.tag == "AccessTool")
-        {
-            device.ActivateDevice();
-        }
+        controlledDevice.TryDevice(device);
+
+
     }
 }

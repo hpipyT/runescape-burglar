@@ -2,25 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : ControlledDevice
+public class Door : Device, IUseable, IActivatable
 {
     public bool isLocked;
 
-    public override void TryDevice()
+    public void Use()
     {
-        base.TryDevice();
         AttemptDoor();
     }
 
-    public override void EnableDevice()
+    public void UseWith(Item item)
     {
+        if (item.tag == "AccessTool")
+        {
+            Enable();
+        }
+    }
+
+    public void Enable()
+    {
+        Debug.Log("Unlocked door");
         isLocked = false;
     }
 
-    public override void ActivateDevice()
+    public void Activate()
     {
         // unlock door and open
-        EnableDevice();
+        Enable();
         OpenDoor();
     }
 

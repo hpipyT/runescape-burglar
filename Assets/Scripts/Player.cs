@@ -16,7 +16,6 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject character;
 
-
     public PlayerInput playerInput;
 
     private InputAction click;
@@ -106,6 +105,7 @@ public class Player : MonoBehaviour
     {
         switch (selection.tag)
         {
+            // environment
             case "Ground":
                 MovePlayer();
                 break;
@@ -113,21 +113,23 @@ public class Player : MonoBehaviour
                 MovePlayer();
                 StartCoroutine(InteractDevice(selection));
                 break;
-            case "LooseDevice":
-                // may have to change this later
-                inventory.AddToInventory(selection.transform.parent.GetComponent<Item>());
-                Destroy(selection);
-                StartCoroutine(waita());
-                break;
+            // loose items
             default:
+                Debug.Log(selection.tag);
+                if (selection.GetComponent<Item>().isGrabbable == true)
+                {
+                    
+                    inventory.AddToInventory(selection.GetComponent<Item>());
+                    StartCoroutine(waita());
+                    Destroy(selection);
+                }
                 break;
         };
     }
-    
-    private IEnumerator waita()
+
+    public IEnumerator waita()
     {
         yield return new WaitForSeconds(1.0f);
-        Debug.Log(inventory.items[0]);
     }
 
     // returns true if player clicked on accessible destination
@@ -187,6 +189,23 @@ public class Player : MonoBehaviour
                     if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                     {
                         Debug.Log("reached destination");
+
+                        Item item = inventory.selectedItem;
+
+                        if (item != null && selection.TryGetComponent(out IUseable tryableDeviceWithObject))
+                        {
+                            tryableDeviceWithObject.UseWith(item);
+                        }
+                        else if (selection.TryGetComponent(out IUseable tryableDevice))
+                        {
+                            tryableDevice.Use();
+                        }
+                        // interact using item
+
+
+                        // interact without item
+
+
                         yield return null;
                         break;
                     }

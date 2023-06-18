@@ -2,22 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ControlledDevice : Item
+public class Device : Item
 {
     public string displayName;
     public string descriptiveName;
     public string alteredName;
+    private Item item;
 
     // base try device
     public virtual void TryDevice()
     {
+        // Debug.Log("trying device");
         displayName = descriptiveName;
     }
 
 
     // try device with selected item
-    public virtual void TryDevice(GameObject input)
+    public virtual void TryDevice(Item input)
     {
+        Debug.Log("trying device with item input");
         TryDevice();
     }
 
