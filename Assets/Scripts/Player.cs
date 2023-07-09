@@ -118,10 +118,9 @@ public class Player : MonoBehaviour
                 Debug.Log(selection.tag);
                 if (selection.GetComponent<Item>().isGrabbable == true)
                 {
+                    StartCoroutine(InteractDevice(selection));
                     
-                    inventory.AddToInventory(selection.GetComponent<Item>());
-                    StartCoroutine(waita());
-                    Destroy(selection);
+
                 }
                 break;
         };
@@ -192,9 +191,18 @@ public class Player : MonoBehaviour
 
                         Item item = inventory.selectedItem;
 
+                        if (selection.GetComponent<Item>().isGrabbable == true)
+                        {
+                            inventory.AddToInventory(selection.GetComponent<Item>());
+                            StartCoroutine(waita());
+                            Destroy(selection);
+                            break;
+                        }
+
                         if (item != null && selection.TryGetComponent(out IUseable tryableDeviceWithObject))
                         {
                             tryableDeviceWithObject.UseWith(item);
+                            inventory.selectedItem = null;
                         }
                         else if (selection.TryGetComponent(out IUseable tryableDevice))
                         {

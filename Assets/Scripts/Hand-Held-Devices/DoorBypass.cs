@@ -2,13 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoorBypass : Device, IUseable
+public class DoorBypass : Device, IHackable
 {
     private Door door;
 
     public void Use()
     {
         Debug.Log("");
+    }
+
+    public void Hack()
+    {
+
     }
 
     public void UseWith(Item item)
@@ -19,7 +24,6 @@ public class DoorBypass : Device, IUseable
     // Start is called before the first frame update
     void Start()
     {
-        isGrabbable = true;
     }
 
     // Update is called once per frame

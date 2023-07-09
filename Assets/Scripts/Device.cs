@@ -10,7 +10,7 @@ public class Device : Item
     private Item item;
 
     // base try device
-    public virtual void TryDevice()
+    public virtual void InspectDevice()
     {
         // Debug.Log("trying device");
         displayName = descriptiveName;
@@ -20,8 +20,7 @@ public class Device : Item
     // try device with selected item
     public virtual void TryDevice(Item input)
     {
-        Debug.Log("trying device with item input");
-        TryDevice();
+        InspectDevice();
     }
 
     // for bypassing impedences, like locks or firewalls

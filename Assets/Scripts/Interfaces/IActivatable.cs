@@ -6,6 +6,5 @@ using UnityEngine;
 // Change state of device
 public interface IActivatable
 {
-    void Enable();
     void Activate();
 }

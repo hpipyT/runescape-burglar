@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : Device, IUseable, IActivatable
+public class Door : Device, IUseable, IActivatable, IDoorable
 {
     public bool isLocked;
 
@@ -15,21 +15,23 @@ public class Door : Device, IUseable, IActivatable
     {
         if (item.tag == "AccessTool")
         {
-            Enable();
+            Activate();
         }
     }
 
-    public void Enable()
-    {
-        Debug.Log("Unlocked door");
-        isLocked = false;
-    }
 
     public void Activate()
     {
         // unlock door and open
-        Enable();
-        OpenDoor();
+        Debug.Log("Unlocked door");
+        isLocked = false;
+        // OpenDoor();
+    }
+
+    public void OpenDoor()
+    {
+        Debug.Log("Opened Door");
+        transform.Translate(Vector3.up * 4, Space.World);
     }
 
     public void AttemptDoor()
@@ -40,9 +42,4 @@ public class Door : Device, IUseable, IActivatable
         }
     }
 
-    private void OpenDoor()
-    {
-        Debug.Log("Opened Door");
-        transform.Translate(Vector3.up, Space.World);
-    }
 }

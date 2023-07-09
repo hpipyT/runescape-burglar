@@ -15,22 +15,24 @@ public class AccessPad : Device, IUseable
 
     public void UseWith(Item item)
     {
-        Debug.Log("Trying access pad with item: " + item.name);
-        AttemptAccess(item.GetComponent<Device>());
+        Debug.Log("Trying access pad with " + item.name);
+        if (item.TryGetComponent(out IHackable hackDevice))
+        {
+            AttemptAccessFromPad(item.GetComponent<Device>());
+        }    
     }
 
-
-    // has a keycard reader
-    // has a numpad
-    // has an electronic bypass
-
-
-    private void AttemptAccess(Device device)
+    private void AttemptAccessFromPad(Device device)
     {
-        Debug.Log(device.name);
+        Debug.Log("Accessing " + controlledDevice.name + " from " + this.name);
 
-        controlledDevice.TryDevice(device);
+        // if the input device has property to activate doors,
+        if (controlledDevice.TryGetComponent(out IActivatable activates))
+        {
+            activates.Activate();
+            controlledDevice.InspectDevice();
+        }
 
-
+        // controlledDevice.TryDevice(device);
     }
 }
