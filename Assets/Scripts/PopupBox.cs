@@ -147,31 +147,9 @@ public class PopupBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
             
         }
-
-
-
         // </ChatGPT4>
 
-        // ignore game geometry
-
-        // only click on UI elements
-
-        // create another InputSystem for dialog boxes at Start and enable when in Box, disable OnExit
-
-        // 
-        Debug.Log("dictionary contents: ");
-        foreach (var entry in options)
-        {
-            Debug.Log("Key: " + entry.Key);
-            // entry.Value.Invoke(); // Invoke the associated action
-        }
     }
-
-    // gotta create a game object then attach a script to it
-
-    // Disable Popupbox actionmap
-    // Destroy on leave UI
-
 
     public void OnPointerEnter(PointerEventData eventData)
     {

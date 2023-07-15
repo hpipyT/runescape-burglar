@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEditor;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Player : MonoBehaviour
 {
@@ -105,10 +106,11 @@ public class Player : MonoBehaviour
             };
     }
 
-    // creates dictionary of strings and functions that a player can take on selected object
+    // Gets Actions available to right-clicked item
+    // // dictionary of strings and functs
     private Dictionary<string, System.Action> GetActions(GameObject selection)
     {
-        Vector2 pos = mousePos.ReadValue<Vector2>();
+
         Dictionary<string, System.Action> actions = new Dictionary<string, System.Action>();
         switch (selection.tag)
         {
@@ -116,7 +118,7 @@ public class Player : MonoBehaviour
             case "Ground":
                 // Move here
                 
-                actions.Add("Move Here", () => MovePlayer(pos));
+                actions.Add("Move Here", () => MovePlayer(rightClickPos));
                 // Cancel
 
                 return actions;
@@ -128,7 +130,7 @@ public class Player : MonoBehaviour
                 {
                     actions = display.GetActionsToDisplay();
                     selection.GetComponent<Item>().AddBaseActions(actions);
-                    actions.Add("Move Here", () => MovePlayer(pos));
+                    actions.Add("Move Here", () => MovePlayer(rightClickPos));
                 };
 
                 // if an inventory item is selected, add "use with selected item" option
@@ -233,7 +235,7 @@ public class Player : MonoBehaviour
     // returns true if player clicked on accessible destination
     private bool MovePlayer(Vector2 pos)
     {
-        Debug.Log("Moving to " + pos);
+        
         // convert point on screen to point in world space
         if (Physics.Raycast(cam.ScreenPointToRay(pos), out RaycastHit hit, 100f))
         {
@@ -242,8 +244,11 @@ public class Player : MonoBehaviour
 
             if (NavMesh.CalculatePath(transform.position, hit.point, NavMesh.AllAreas, path))
             {
+
+                Debug.Log("Moving to " + pos);
                 if (path.status == NavMeshPathStatus.PathPartial)
                 {
+                    Debug.Log("Found partial path");
                     agent.destination = path.corners[path.corners.Length - 1];
                     return false;
                 }
@@ -252,6 +257,40 @@ public class Player : MonoBehaviour
 
                 return true;
             }
+            else
+            {
+                Debug.Log("Invalid path, attempting to move to point under object.");
+                // raycast at Vector3.down
+                Ray ray = new Ray(hit.collider.gameObject.transform.position, Vector3.down);
+
+                // if hits Ground, try this as the new CalculatePath(transform.position, hit2.point, NaveMesh.AllAreas, path))
+
+                if (Physics.Raycast(ray, out RaycastHit hit2))
+                {
+                    Debug.Log("Second ray hit: " + hit2.collider.name);
+                    if (hit2.collider.CompareTag("Ground"))
+                    {
+                        NavMesh.CalculatePath(transform.position, hit2.point, NavMesh.AllAreas, path);
+
+                        if (path.status == NavMeshPathStatus.PathPartial)
+                        {
+                            Debug.Log("Found partial path to new point");
+                            agent.destination = path.corners[path.corners.Length - 1];
+                            return false;
+                        }
+                        else
+                        {
+                            Debug.Log("Found path to Ground below object");
+                            agent.destination = hit2.point;
+                        }
+
+                        return true;
+                    }
+                }
+                    
+            }
+
+
 
         }
         return false;
@@ -271,6 +310,9 @@ public class Player : MonoBehaviour
             Debug.Log("Broken path to device");
             yield break;
         }
+
+        // when object is too high
+        
 
         // wait for agent to reach the device before activating it
         // answers.unity.com/questions/324589/how-can-i-tell-when-a-navmesh-has-reached-its-dest.html

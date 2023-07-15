@@ -105,4 +105,15 @@ public class ToDo : MonoBehaviour
     // - Jack of all trades
     // - Has a glorious hat
 
+
+
+
+    // Guard dialog, chat gpt generated would be neat
+    // - Stall
+    // - Persuade/Charm
+    // - Persuade with info
+    // - Bribe
+    // - Intimidate
+
+
 }
