@@ -1,20 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class Item : MonoBehaviour
 {
 
-    private Sprite icon;
+    [SerializeField]
+    public Sprite icon;
 
     public bool isGrabbable = false;
 
-    public void RightClick()
+    public Dictionary<string, System.Action> AddBaseActions(Dictionary<string, System.Action> actions)
     {
 
-    }
-    void Examine()
-    {
+
+        if (isGrabbable)
+        {
+            actions.Add("Pickup", () => GameObject.Find("Player").GetComponent<Player>().AddToInventory(this));
+        }
+
+        return actions;
 
     }
 

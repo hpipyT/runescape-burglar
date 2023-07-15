@@ -4,9 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows;
 
-public class AccessPad : Device, IUseable
+public class AccessPad : Device, IUseable, IOptionDisplayable
 {
+    public Dictionary<string, System.Action> GetActionsToDisplay()
+    {
+        Dictionary<string, Action> displayOptions = new Dictionary<string, Action>();
+
+        displayOptions["Examine"] = () => // displayOptions comes from Item class
+        {
+            Debug.Log("Electronic interface for communicating with connected devices");
+        };
+
+        return displayOptions;
+    }
+
+    // list of devices
     public Device controlledDevice;
+    // select device to control
 
     public void Use()
     {
@@ -16,9 +30,12 @@ public class AccessPad : Device, IUseable
     public void UseWith(Item item)
     {
         Debug.Log("Trying access pad with " + item.name);
-        if (item.TryGetComponent(out IHackable hackDevice))
+
+        // if device can hack, allow access to pad
+        if (item.TryGetComponent(out Device hackDevice))
         {
-            AttemptAccessFromPad(item.GetComponent<Device>());
+            if (hackDevice.hacksPanels)
+            AttemptAccessFromPad(hackDevice);
         }    
     }
 
@@ -26,13 +43,10 @@ public class AccessPad : Device, IUseable
     {
         Debug.Log("Accessing " + controlledDevice.name + " from " + this.name);
 
-        // if the input device has property to activate doors,
         if (controlledDevice.TryGetComponent(out IActivatable activates))
         {
             activates.Activate();
             controlledDevice.InspectDevice();
         }
-
-        // controlledDevice.TryDevice(device);
     }
 }

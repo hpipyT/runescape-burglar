@@ -7,5 +7,5 @@ using UnityEngine;
 public interface IUseable
 {
     void Use();
-    void UseWith(Item gameObject);    
+    void UseWith(Item obj);    
 }

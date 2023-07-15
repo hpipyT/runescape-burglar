@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Device : Item
 {
+    private Item item;
+
     public string displayName;
     public string descriptiveName;
     public string alteredName;
-    private Item item;
+
+    public bool hacksPanels;
 
     // base try device
     public virtual void InspectDevice()

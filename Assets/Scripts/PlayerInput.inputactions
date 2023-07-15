@@ -162,6 +162,54 @@
             ]
         },
         {
+            "name": "optionsBox",
+            "id": "6f82cca5-0a93-4e79-ab54-70473a18268b",
+            "actions": [
+                {
+                    "name": "select",
+                    "type": "Button",
+                    "id": "39f93bc2-e5e2-4dc7-bc88-4fa5be8889eb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "hoverOn",
+                    "type": "Value",
+                    "id": "a007f862-a553-4f19-82a2-9b634fa4b670",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1df4cb6a-56e5-456d-8e80-7cfabf331f91",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "926b9645-e917-4850-ab74-6f7272e8786e",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "hoverOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "inventory",
             "id": "8355ef86-9dc7-43a4-8341-e5ae57b94c90",
             "actions": [

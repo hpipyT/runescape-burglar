@@ -1,28 +1,73 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : Device, IUseable, IActivatable, IDoorable
+public class Door : Device, IUseable, IActivatable, IOptionDisplayable
 {
     public bool isLocked;
+    public bool isOpen;
+
+
+    public Dictionary<string, Action> GetActionsToDisplay()
+    {
+
+        Dictionary<string, Action> displayOptions = new Dictionary<string, Action>();
+
+        // Map display strings to actions
+        if (!isOpen)
+            displayOptions["Open Door"] = () => // displayOptions comes from Item class
+            {
+                AttemptDoor();
+            };
+
+        else
+            displayOptions["Close Door"] = () =>
+            {
+                AttemptDoor();
+            };
+
+        displayOptions["Examine"] = () => // displayOptions comes from Item class
+        {
+            InspectDevice();
+        };
+
+        return displayOptions;
+    }
 
     public void Use()
     {
         AttemptDoor();
     }
 
-    public void UseWith(Item item)
+    public void AttemptDoor()
     {
-        if (item.tag == "AccessTool")
+        if (!isLocked && !isOpen)
         {
-            Activate();
+            OpenDoor();
+            isOpen = true;
+        }
+        else if (isOpen)
+        {
+            CloseDoor();
+            isOpen = false;
+        }
+        else
+        {
+            Debug.Log("Door is Locked");
         }
     }
 
+    public void UseWith(Item item)
+    {
+        // electronic door opener
 
+        // crowbar
+    }
+
+    // Unlock
     public void Activate()
     {
-        // unlock door and open
         Debug.Log("Unlocked door");
         isLocked = false;
         // OpenDoor();
@@ -34,12 +79,10 @@ public class Door : Device, IUseable, IActivatable, IDoorable
         transform.Translate(Vector3.up * 4, Space.World);
     }
 
-    public void AttemptDoor()
+    public void CloseDoor()
     {
-        if (!isLocked)
-        {
-            OpenDoor();
-        }
+        Debug.Log("Closed Door");
+        transform.Translate(Vector3.up * -4, Space.World);
     }
 
 }

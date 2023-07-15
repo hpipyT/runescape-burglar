@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using UnityEditor;
 
 public class Player : MonoBehaviour
@@ -11,26 +13,41 @@ public class Player : MonoBehaviour
     private Inventory inventory;
 
     [SerializeField]
-    private Camera cam;
+    private Camera cam; // orbit camera
 
     [SerializeField]
-    private GameObject character;
+    private GameObject character; // WIP
 
-    public PlayerInput playerInput;
+    // popup box
+    [SerializeField]
+    private PopupBox popupBox;
+
+    public PlayerInput playerInput; // clicking the World
 
     private InputAction click;
     private InputAction rightClick;
     private InputAction mousePos;
+    
 
+    // navigation
     private NavMeshAgent agent;
-    NavMeshPath path;
+
+    NavMeshPath path; // compare old path to new path to check if complete
     NavMeshPath oldPath;
+
+    Vector2 rightClickPos;
 
     private void Awake()
     {
         playerInput = new PlayerInput();
         playerInput.Enable();
+
+
+
         MapInput();
+
+        // rightClickOptions = new OptionsBox();
+
     }
 
 
@@ -43,6 +60,13 @@ public class Player : MonoBehaviour
         agent = character.GetComponent<NavMeshAgent>();
     }
 
+    void Update()
+    {
+
+    }
+
+
+    // left click and right click in World space
     private void MapInput()
     {
         click = playerInput.player.click;
@@ -65,18 +89,114 @@ public class Player : MonoBehaviour
             {
                 // check what object was rightClicked
                 Vector2 pos = mousePos.ReadValue<Vector2>();
+                rightClickPos = pos;
                 RaycastHit hit;
 
                 if (!Physics.Raycast(cam.ScreenPointToRay(pos), out hit, 100f))
                     return;
 
-                RightClick(hit.collider.gameObject);                
+                // actions for the item
+                Dictionary<string, System.Action> actions = GetActions(hit.collider.gameObject);
+
+                // avoid duplicates
+                if(!popupBox.GetComponentInChildren<Image>())
+                    popupBox.CreateOptionsBox(actions, pos);
+
             };
     }
 
-    void Update()
+    // creates dictionary of strings and functions that a player can take on selected object
+    private Dictionary<string, System.Action> GetActions(GameObject selection)
     {
+        Vector2 pos = mousePos.ReadValue<Vector2>();
+        Dictionary<string, System.Action> actions = new Dictionary<string, System.Action>();
+        switch (selection.tag)
+        {
+            // environment
+            case "Ground":
+                // Move here
+                
+                actions.Add("Move Here", () => MovePlayer(pos));
+                // Cancel
 
+                return actions;
+
+            case "Device":
+
+                // get object's display options
+                if (selection.TryGetComponent(out IOptionDisplayable display))
+                {
+                    actions = display.GetActionsToDisplay();
+                    selection.GetComponent<Item>().AddBaseActions(actions);
+                    actions.Add("Move Here", () => MovePlayer(pos));
+                };
+
+                // if an inventory item is selected, add "use with selected item" option
+                if (inventory.selectedItem != null)
+                {
+                    if (selection.TryGetComponent(out IUseable use))
+                    {
+                        actions.Add("Use with " + inventory.selectedItem.name, () =>
+                        {
+                            //actions.Add("Move Here", () => MovePlayer(rightClickPos));
+                            MovePlayer(rightClickPos);
+                            ArriveThenExecute((item) => use.UseWith(inventory.selectedItem), inventory.selectedItem); 
+                        });
+                    }
+                }
+
+                return actions;
+
+            default:
+                return actions;
+        };
+    }
+
+    // pass a function that takes a parameter, as a parameter to this function
+    // will wait until the player agent arrives at the destination before executing
+    private void ArriveThenExecute<T>(System.Action<T> func, T selection)
+    {
+        StartCoroutine(ArriveThenExecuteHelper(func, selection));
+    }
+
+    private IEnumerator ArriveThenExecuteHelper<T>(System.Action<T> func, T selection)
+    {
+        Debug.Log("In coroutine");
+        oldPath = path;
+        if (path.status == NavMeshPathStatus.PathPartial || path.status == NavMeshPathStatus.PathInvalid)
+        {
+            Debug.Log("Broken path to destination");
+            yield break;
+        }
+
+        // wait for agent to reach the device before activating it
+        // answers.unity.com/questions/324589/how-can-i-tell-when-a-navmesh-has-reached-its-dest.html
+        while (true)
+        {
+            // case when player clicks an object then before reaching it changes paths
+            if (oldPath != path)
+            {
+                yield return null;
+                break;
+            }
+
+            if (!agent.pathPending)
+            {
+                if (agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                    {
+                        Debug.Log("Item: " + selection);
+                        func.Invoke(selection);
+                        yield return null;
+                        break;
+                    }
+                }
+            }
+            yield return null;
+        }
+
+        yield return null;
     }
 
     // left clicking various game elements
@@ -84,58 +204,36 @@ public class Player : MonoBehaviour
     {
 
 
+
         // cases for types of clicked object
         switch (selection.tag)
         {
             case "Ground":
-                MovePlayer();
+                MovePlayer(mousePos.ReadValue<Vector2>());
 
                 break;
             case "Device":
-                MovePlayer();
-                StartCoroutine(InteractDevice(selection));
+                MovePlayer(mousePos.ReadValue<Vector2>());
+                InteractDevice(selection);
                 break;
-            default:
-                break;
-        };
-    }
 
-
-    private void RightClick(GameObject selection)
-    {
-        switch (selection.tag)
-        {
-            // environment
-            case "Ground":
-                MovePlayer();
-                break;
-            case "Device":
-                MovePlayer();
-                StartCoroutine(InteractDevice(selection));
-                break;
-            // loose items
             default:
-                Debug.Log(selection.tag);
-                if (selection.GetComponent<Item>().isGrabbable == true)
+                // loose items
+                if (selection.TryGetComponent(out Item item))
                 {
-                    StartCoroutine(InteractDevice(selection));
-                    
-
+                    if (item.isGrabbable)
+                        inventory.AddToInventory(selection.GetComponent<Item>());
                 }
                 break;
         };
     }
 
-    public IEnumerator waita()
-    {
-        yield return new WaitForSeconds(1.0f);
-    }
+
 
     // returns true if player clicked on accessible destination
-    private bool MovePlayer()
+    private bool MovePlayer(Vector2 pos)
     {
-        Vector2 pos = mousePos.ReadValue<Vector2>();
-
+        Debug.Log("Moving to " + pos);
         // convert point on screen to point in world space
         if (Physics.Raycast(cam.ScreenPointToRay(pos), out RaycastHit hit, 100f))
         {
@@ -159,8 +257,12 @@ public class Player : MonoBehaviour
         return false;
     }
 
+    private void InteractDevice(GameObject selection)
+    {
+        StartCoroutine(InteractDeviceHelper(selection));
+    }
 
-    private IEnumerator InteractDevice(GameObject selection) 
+    private IEnumerator InteractDeviceHelper(GameObject selection) 
     {
         // if device can't be reached, no interact
         oldPath = path;
@@ -191,6 +293,7 @@ public class Player : MonoBehaviour
 
                         Item item = inventory.selectedItem;
 
+                        // picking up loose device
                         if (selection.GetComponent<Item>().isGrabbable == true)
                         {
                             inventory.AddToInventory(selection.GetComponent<Item>());
@@ -199,20 +302,18 @@ public class Player : MonoBehaviour
                             break;
                         }
 
+                        // use item on device
                         if (item != null && selection.TryGetComponent(out IUseable tryableDeviceWithObject))
                         {
                             tryableDeviceWithObject.UseWith(item);
                             inventory.selectedItem = null;
                         }
+
+                        // use device
                         else if (selection.TryGetComponent(out IUseable tryableDevice))
                         {
                             tryableDevice.Use();
                         }
-                        // interact using item
-
-
-                        // interact without item
-
 
                         yield return null;
                         break;
@@ -225,10 +326,14 @@ public class Player : MonoBehaviour
         yield return null;
     }
 
-
-
-    private void RightClickItem()
+    public IEnumerator waita()
     {
-        Debug.Log("Arrived");
+        yield return new WaitForSeconds(1.0f);
+    }
+
+    public void AddToInventory(Item item)
+    {
+        MovePlayer(rightClickPos);
+        InteractDevice(item.gameObject);
     }
 }

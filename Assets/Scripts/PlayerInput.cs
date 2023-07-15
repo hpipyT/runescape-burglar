@@ -184,6 +184,54 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
             ]
         },
         {
+            ""name"": ""optionsBox"",
+            ""id"": ""6f82cca5-0a93-4e79-ab54-70473a18268b"",
+            ""actions"": [
+                {
+                    ""name"": ""select"",
+                    ""type"": ""Button"",
+                    ""id"": ""39f93bc2-e5e2-4dc7-bc88-4fa5be8889eb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""hoverOn"",
+                    ""type"": ""Value"",
+                    ""id"": ""a007f862-a553-4f19-82a2-9b634fa4b670"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""1df4cb6a-56e5-456d-8e80-7cfabf331f91"",
+                    ""path"": ""<Mouse>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""926b9645-e917-4850-ab74-6f7272e8786e"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""hoverOn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""inventory"",
             ""id"": ""8355ef86-9dc7-43a4-8341-e5ae57b94c90"",
             ""actions"": [
@@ -263,6 +311,10 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_player_click = m_player.FindAction("click", throwIfNotFound: true);
         m_player_rightClick = m_player.FindAction("rightClick", throwIfNotFound: true);
         m_player_move = m_player.FindAction("move", throwIfNotFound: true);
+        // optionsBox
+        m_optionsBox = asset.FindActionMap("optionsBox", throwIfNotFound: true);
+        m_optionsBox_select = m_optionsBox.FindAction("select", throwIfNotFound: true);
+        m_optionsBox_hoverOn = m_optionsBox.FindAction("hoverOn", throwIfNotFound: true);
         // inventory
         m_inventory = asset.FindActionMap("inventory", throwIfNotFound: true);
         m_inventory_select = m_inventory.FindAction("select", throwIfNotFound: true);
@@ -414,6 +466,47 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     }
     public PlayerActions @player => new PlayerActions(this);
 
+    // optionsBox
+    private readonly InputActionMap m_optionsBox;
+    private IOptionsBoxActions m_OptionsBoxActionsCallbackInterface;
+    private readonly InputAction m_optionsBox_select;
+    private readonly InputAction m_optionsBox_hoverOn;
+    public struct OptionsBoxActions
+    {
+        private @PlayerInput m_Wrapper;
+        public OptionsBoxActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @select => m_Wrapper.m_optionsBox_select;
+        public InputAction @hoverOn => m_Wrapper.m_optionsBox_hoverOn;
+        public InputActionMap Get() { return m_Wrapper.m_optionsBox; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(OptionsBoxActions set) { return set.Get(); }
+        public void SetCallbacks(IOptionsBoxActions instance)
+        {
+            if (m_Wrapper.m_OptionsBoxActionsCallbackInterface != null)
+            {
+                @select.started -= m_Wrapper.m_OptionsBoxActionsCallbackInterface.OnSelect;
+                @select.performed -= m_Wrapper.m_OptionsBoxActionsCallbackInterface.OnSelect;
+                @select.canceled -= m_Wrapper.m_OptionsBoxActionsCallbackInterface.OnSelect;
+                @hoverOn.started -= m_Wrapper.m_OptionsBoxActionsCallbackInterface.OnHoverOn;
+                @hoverOn.performed -= m_Wrapper.m_OptionsBoxActionsCallbackInterface.OnHoverOn;
+                @hoverOn.canceled -= m_Wrapper.m_OptionsBoxActionsCallbackInterface.OnHoverOn;
+            }
+            m_Wrapper.m_OptionsBoxActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @select.started += instance.OnSelect;
+                @select.performed += instance.OnSelect;
+                @select.canceled += instance.OnSelect;
+                @hoverOn.started += instance.OnHoverOn;
+                @hoverOn.performed += instance.OnHoverOn;
+                @hoverOn.canceled += instance.OnHoverOn;
+            }
+        }
+    }
+    public OptionsBoxActions @optionsBox => new OptionsBoxActions(this);
+
     // inventory
     private readonly InputActionMap m_inventory;
     private IInventoryActions m_InventoryActionsCallbackInterface;
@@ -472,6 +565,11 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnClick(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
+    }
+    public interface IOptionsBoxActions
+    {
+        void OnSelect(InputAction.CallbackContext context);
+        void OnHoverOn(InputAction.CallbackContext context);
     }
     public interface IInventoryActions
     {
