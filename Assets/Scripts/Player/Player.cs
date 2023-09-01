@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
     NavMeshPath path; // compare old path to new path to check if complete
     NavMeshPath oldPath;
 
-    Vector2 rightClickPos;
+    public Vector2 rightClickPos;
 
     private void Awake()
     {
@@ -156,7 +156,7 @@ public class Player : MonoBehaviour
 
     // pass a function that takes a parameter, as a parameter to this function
     // will wait until the player agent arrives at the destination before executing
-    private void ArriveThenExecute<T>(System.Action<T> func, T selection)
+    public void ArriveThenExecute<T>(System.Action<T> func, T selection)
     {
         StartCoroutine(ArriveThenExecuteHelper(func, selection));
     }
@@ -224,7 +224,10 @@ public class Player : MonoBehaviour
                 if (selection.TryGetComponent(out Item item))
                 {
                     if (item.isGrabbable)
+                    {
+                        item.isGrabbable = false;
                         inventory.AddToInventory(selection.GetComponent<Item>());
+                    }
                 }
                 break;
         };
@@ -233,7 +236,7 @@ public class Player : MonoBehaviour
 
 
     // returns true if player clicked on accessible destination
-    private bool MovePlayer(Vector2 pos)
+    public bool MovePlayer(Vector2 pos)
     {
         
         // convert point on screen to point in world space
@@ -338,8 +341,9 @@ public class Player : MonoBehaviour
                         // picking up loose device
                         if (selection.GetComponent<Item>().isGrabbable == true)
                         {
+                            selection.GetComponent<Item>().isGrabbable = false;
                             inventory.AddToInventory(selection.GetComponent<Item>());
-                            StartCoroutine(waita());
+
                             Destroy(selection);
                             break;
                         }
@@ -368,14 +372,10 @@ public class Player : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator waita()
-    {
-        yield return new WaitForSeconds(1.0f);
-    }
 
     public void AddToInventory(Item item)
     {
-        MovePlayer(rightClickPos);
+        // MovePlayer(rightClickPos);
         InteractDevice(item.gameObject);
     }
 }

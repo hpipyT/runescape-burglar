@@ -12,10 +12,7 @@ public class CameraAccess : Device, IOptionDisplayable
     {
         Dictionary<string, Action> displayOptions = new Dictionary<string, Action>();
 
-        displayOptions["Examine"] = () => // displayOptions comes from Item class
-        {
-            InspectDevice();
-        };
+
 
         return displayOptions;
     }

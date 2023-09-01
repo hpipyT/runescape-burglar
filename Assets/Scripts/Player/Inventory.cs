@@ -1,7 +1,9 @@
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -13,6 +15,8 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public Item[] items;
     int numberSlots = 5;
     public bool inInventory;
+
+    private int panelWidth = 1200;
 
     private PlayerInput inventoryActions;
     private InputAction leftClick;
@@ -69,7 +73,9 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             // divide the whole size by slots # to get size of each, 5 items, so
             // 1200 / 5slots = 240 so, inventoryPoint / 240 gets the slot 
-            int slotSize = 1200 / numberSlots;
+            int slotSize = panelWidth / numberSlots;
+
+            // 1200 is the Panel's width
 
             return (int)Mathf.Floor(inventoryPoint.x) / slotSize;
 
@@ -80,13 +86,27 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void RightClickItem(int cell)
     {
+        Dictionary<string, System.Action> actions = new Dictionary<string, System.Action>();
+
         if (items[cell].TryGetComponent(out IOptionDisplayable itemOptions))
         {
-            PopupBox boxMaker = new PopupBox();
+            PopupBox boxMaker = GameObject.Find("Player/PopupBox").GetComponent<PopupBox>();
             Vector2 mousePoint = hoverPoint.ReadValue<Vector2>();
 
             inventoryActions.Disable();
-            boxMaker.CreateOptionsBox(itemOptions.GetActionsToDisplay(), mousePoint);
+
+            actions = itemOptions.GetActionsToDisplay();
+            items[cell].GetComponent<Item>().AddBaseActions(actions);
+            if (items[cell].TryGetComponent(out IUseable use))
+            {
+                actions.Add("Use" + items[cell].name, () =>
+                {
+                    selectedItem = items[cell];
+                });
+            }
+
+
+            boxMaker.CreateOptionsBox(actions, mousePoint);
         }
     }
 
@@ -111,6 +131,12 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 items[i] = Instantiate<Item>(item);
                 items[i].transform.position = new Vector3(0, 0, -1000);
 
+                // make item spawn at the current cell's position
+
+                int sectionWidth = panelWidth / numberSlots;
+                // get center of cell
+                float center = (i + 0.5f) * sectionWidth;
+
                 // disable rendering for inventory instance
                 foreach (Transform child in item.transform)
                 {
@@ -128,6 +154,15 @@ public class Inventory : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
+    public void AddSprite()
+    {
+
+    }
+
+    public void RemoveSprite()
+    {
+
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {

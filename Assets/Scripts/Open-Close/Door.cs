@@ -27,10 +27,7 @@ public class Door : Device, IUseable, IActivatable, IOptionDisplayable
                 AttemptDoor();
             };
 
-        displayOptions["Examine"] = () => // displayOptions comes from Item class
-        {
-            InspectDevice();
-        };
+
 
         return displayOptions;
     }
@@ -73,13 +70,13 @@ public class Door : Device, IUseable, IActivatable, IOptionDisplayable
         // OpenDoor();
     }
 
-    public void OpenDoor()
+    public virtual void OpenDoor()
     {
         Debug.Log("Opened Door");
         transform.Translate(Vector3.up * 4, Space.World);
     }
 
-    public void CloseDoor()
+    public virtual void CloseDoor()
     {
         Debug.Log("Closed Door");
         transform.Translate(Vector3.up * -4, Space.World);

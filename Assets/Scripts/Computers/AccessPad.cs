@@ -6,25 +6,31 @@ using UnityEngine.Windows;
 
 public class AccessPad : Device, IUseable, IOptionDisplayable
 {
+    public bool isHacked;
+
     public Dictionary<string, System.Action> GetActionsToDisplay()
     {
         Dictionary<string, Action> displayOptions = new Dictionary<string, Action>();
-
-        displayOptions["Examine"] = () => // displayOptions comes from Item class
-        {
-            Debug.Log("Electronic interface for communicating with connected devices");
-        };
-
         return displayOptions;
     }
 
     // list of devices
-    public Device controlledDevice;
+    public List<Device> controlledDevices;
     // select device to control
 
     public void Use()
     {
         Debug.Log("Trying access pad");
+        if (!isHacked)
+        {
+            Debug.Log("Pad is password protected");
+        }
+        else
+        {
+            // bring up controlled devices popup
+
+            // attempt to access device from pad
+        }
     }
 
     public void UseWith(Item item)
@@ -35,18 +41,20 @@ public class AccessPad : Device, IUseable, IOptionDisplayable
         if (item.TryGetComponent(out Device hackDevice))
         {
             if (hackDevice.hacksPanels)
-            AttemptAccessFromPad(hackDevice);
+                isHacked = true;
+            
         }    
     }
 
     private void AttemptAccessFromPad(Device device)
     {
-        Debug.Log("Accessing " + controlledDevice.name + " from " + this.name);
+        Debug.Log("Accessing " + controlledDevices[0].name + " from " + this.name);
 
-        if (controlledDevice.TryGetComponent(out IActivatable activates))
+        // get the object's function meant for activating from remote
+        if (controlledDevices[0].TryGetComponent(out IActivatable activates))
         {
             activates.Activate();
-            controlledDevice.InspectDevice();
+            controlledDevices[0].InspectDevice();
         }
     }
 }

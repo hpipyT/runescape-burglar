@@ -54,6 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   isGrabbable: 1
+  examineText: 
   displayName: DoorBypass
   descriptiveName: DoorBypass
   alteredName: DoorBypass
@@ -146,11 +147,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5cd7d6592fbffdf4cbca277c69ca9a07, type: 3}
       propertyPath: m_LocalScale.y
-      value: 35.74273
+      value: 195.01558
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5cd7d6592fbffdf4cbca277c69ca9a07, type: 3}
       propertyPath: m_LocalScale.z
-      value: 157.4954
+      value: 49.28374
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5cd7d6592fbffdf4cbca277c69ca9a07, type: 3}
       propertyPath: m_LocalPosition.x
@@ -158,11 +159,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5cd7d6592fbffdf4cbca277c69ca9a07, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.8080001
+      value: 1.49
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5cd7d6592fbffdf4cbca277c69ca9a07, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.000999722
+      value: 0.129
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5cd7d6592fbffdf4cbca277c69ca9a07, type: 3}
       propertyPath: m_LocalRotation.w

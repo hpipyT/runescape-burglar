@@ -7,6 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using static PlayerInput;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
 public class PopupBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -53,9 +54,22 @@ public class PopupBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
     public void SelectOption()
     {
-        Debug.Log("Option chosen: " + GetOptionCell());
+        // Debug.Log("Option chosen: " + GetOptionCell());
         string dictVal = displayedObject.transform.GetChild(GetOptionCell()).GetComponent<TextMeshProUGUI>().text;
-        actions[dictVal].Invoke();
+
+        if (dictVal == "Examine")
+        {
+            actions[dictVal].Invoke();
+
+        }
+        else
+        {
+
+            Player player = GameObject.Find("Player").GetComponent<Player>();
+            Debug.Log("Moving from popup box");
+            player.MovePlayer(player.rightClickPos);
+            player.ArriveThenExecute((s) => actions[dictVal].Invoke(), dictVal);
+        }
 
         DestroyPopupBox();
     }

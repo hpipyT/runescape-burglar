@@ -13,12 +13,6 @@ public class DoorBypass : Device, IOptionDisplayable
         Dictionary<string, Action> displayOptions = new Dictionary<string, Action>();
 
 
-        displayOptions["Examine"] = () => // displayOptions comes from Item class
-        {
-            Debug.Log("Used to electronically breach doors");
-        };
-
-
         return displayOptions;
     }
 

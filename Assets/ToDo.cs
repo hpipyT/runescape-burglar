@@ -28,6 +28,7 @@ public class ToDo : MonoBehaviour
     // id badge      IRFIDable
     // id skimmer    ISkimmable
     // lockpick      IPickable
+    // camera iPad/tablet
     // fake gas leak can     IFillable
 
     // INTEL 

@@ -64,15 +64,15 @@ public class MobileCamera : MonoBehaviour
     private void OrbitCamera(Vector2 dir)
     {
         // dir has x and y rotation arguments
-        gameObject.transform.RotateAround(characterPos, Vector3.up, dir.x * 0.2f);
-        gameObject.transform.RotateAround(characterPos, gameObject.transform.right, dir.y * 0.2f);
+        gameObject.transform.RotateAround(characterPos, Vector3.up, dir.x * 0.6f);
+        gameObject.transform.RotateAround(characterPos, gameObject.transform.right, dir.y * 0.6f);
         // point camera at point
     }
 
     // zoom in/out camera
     private void ZoomCamera(float zoom)
     {
-        float zoomSpeed = 0.25f;
+        float zoomSpeed = 0.5f;
         float dir = zoom / 120;
 
         gameObject.transform.position += gameObject.transform.forward * dir * zoomSpeed; 
